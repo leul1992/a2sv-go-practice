@@ -7,5 +7,5 @@ import (
 
 func main() {
 	nums := []int{1, 2, 3, 4, 5}
-	fmt.Println(sum.Sum(nums...))
+	fmt.Println(sum.Sum(nums))
 }

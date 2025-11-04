@@ -15,7 +15,7 @@ func TestSum(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Sum(tt.nums...); got != tt.want {
+			if got := Sum(tt.nums); got != tt.want {
 				t.Fatalf("Sum(%v) = %d; want %d", tt.nums, got, tt.want)
 			}
 		})

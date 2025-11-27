@@ -22,7 +22,11 @@ func GetTask(c *gin.Context) {
 	}
 	task, err := data.GetByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		if err.Error() == "record not found" || err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, task)
@@ -34,7 +38,11 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	created := data.Create(input)
+	created, err := data.Create(input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, created)
 }
 
@@ -49,9 +57,14 @@ func UpdateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	updated, err := data.Update(id, input)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		if err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, updated)
@@ -64,7 +77,11 @@ func DeleteTask(c *gin.Context) {
 		return
 	}
 	if err := data.Delete(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		if err.Error() == "task not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "task deleted successfully"})
